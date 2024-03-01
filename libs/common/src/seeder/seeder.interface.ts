@@ -5,7 +5,7 @@ export abstract class Seeder<I = any, E = any> {
   abstract seed(): Promise<E[]>;
   abstract fakeOne(): I;
   abstract create(interfaces: I[]): Promise<E[]>;
-  clear() {
+  async clear() {
     this.connection.db.dropDatabase();
   }
 }

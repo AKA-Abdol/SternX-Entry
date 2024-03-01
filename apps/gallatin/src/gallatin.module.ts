@@ -1,6 +1,4 @@
 import { Module } from '@nestjs/common';
-import { GallatinController } from './gallatin.controller';
-import { GallatinService } from './gallatin.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TasksModule } from './tasks/tasks.module';
 import Joi from 'joi';
@@ -23,7 +21,5 @@ import { MongooseModule } from '@nestjs/mongoose';
     }),
     TasksModule,
   ],
-  controllers: [GallatinController],
-  providers: [GallatinService],
 })
 export class GallatinModule {}

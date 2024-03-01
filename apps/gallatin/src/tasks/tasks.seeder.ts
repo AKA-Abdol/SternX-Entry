@@ -47,7 +47,7 @@ export class TasksSeeder extends Seeder<ICreateTask, Task> {
     return this.tasksRepository.create(interfaces);
   }
 
-  clear() {
+  async clear() {
     this.tasksRepository.dropCollection();
   }
 }
