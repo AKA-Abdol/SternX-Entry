@@ -1,9 +1,9 @@
-import { Prop, Schema } from '@nestjs/mongoose';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { now } from 'mongoose';
 
-@Schema({ timestamps: true })
+@Schema({ timestamps: true, versionKey: false })
 export class Task {
-  id: mongoose.Types.ObjectId;
+  id: string;
 
   @Prop({ default: null })
   parentId: mongoose.Types.ObjectId;
@@ -20,3 +20,5 @@ export class Task {
   @Prop({ default: now() })
   updatedAt: Date;
 }
+
+export const TaskSchema = SchemaFactory.createForClass(Task);

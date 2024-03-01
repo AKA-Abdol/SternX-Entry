@@ -1,9 +1,10 @@
 import { Module } from '@nestjs/common';
 import { GallatinController } from './gallatin.controller';
 import { GallatinService } from './gallatin.service';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TasksModule } from './tasks/tasks.module';
 import Joi from 'joi';
+import { MongooseModule } from '@nestjs/mongoose';
 
 @Module({
   imports: [
@@ -13,6 +14,12 @@ import Joi from 'joi';
         MONGODB_URI: Joi.string().required(),
       }),
       envFilePath: './apps/gallatin/.env',
+    }),
+    MongooseModule.forRootAsync({
+      useFactory: (configService: ConfigService) => ({
+        uri: configService.get<string>('MONGODB_URI'),
+      }),
+      inject: [ConfigService],
     }),
     TasksModule,
   ],
