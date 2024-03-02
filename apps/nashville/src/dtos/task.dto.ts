@@ -1,4 +1,4 @@
-import { Task } from '../tasks.schema';
+import { Task } from 'apps/gallatin/src/tasks/tasks.schema';
 
 export class TaskDto {
   id: string;

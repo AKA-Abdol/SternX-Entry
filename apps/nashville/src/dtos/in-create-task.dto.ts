@@ -1,18 +1,13 @@
 import { IsMongoId, IsOptional, IsString } from 'class-validator';
 
-export class InUpdateTaskDto {
-  @IsMongoId()
-  id: string;
-
+export class InCreateTaskDto {
   @IsOptional()
   @IsMongoId()
   parentId?: string;
 
-  @IsOptional()
   @IsString()
-  title?: string;
+  title: string;
 
-  @IsOptional()
   @IsString()
-  description?: string;
+  description: string;
 }

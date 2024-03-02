@@ -1,0 +1,38 @@
+syntax = "proto3";
+package gallatin;
+
+service TasksService {
+  rpc CreateTask(ICreateTaskDto) returns (TaskDto);
+  rpc UpdateTask(IUpdateTaskDto) returns (TaskDto);
+  rpc DeleteTask(IDeleteTaskDto) returns (TaskDto);
+  rpc GetTask(IGetTaskDto) returns (TaskDto);
+  rpc GetPaginatedTasks(IGetPaginatedTasksDto) returns (TasksDto);
+}
+
+message ICreateTaskDto {
+  optional string parentId = 1;
+  string title = 2;
+  string description = 3;
+}
+
+message IUpdateTaskDto {
+  string id = 1;
+  optional string parentId = 2;
+  optional string title = 3;
+  optional string description = 4;
+}
+
+message IDeleteTaskDto { string id = 1; }
+message IGetTaskDto { string id = 1; }
+message IGetPaginatedTasksDto {
+  optional int32 page = 1;
+  optional int32 perPage = 2;
+}
+
+message TaskDto {
+  string id = 1;
+  string title = 2;
+  string description = 3;
+}
+
+message TasksDto { repeated TaskDto tasks = 1; }

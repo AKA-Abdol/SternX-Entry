@@ -1,9 +1,11 @@
 import { IsMongoId, IsOptional, IsString } from 'class-validator';
 
-export class InUpdateTaskDto {
+export class InUpdateTaskParamDto {
   @IsMongoId()
   id: string;
+}
 
+export class InUpdateTaskDto {
   @IsOptional()
   @IsMongoId()
   parentId?: string;

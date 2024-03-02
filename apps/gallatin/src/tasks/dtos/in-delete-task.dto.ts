@@ -1,6 +1,6 @@
 import { IsMongoId } from 'class-validator';
 
-export class InDeleteTaskParamDto {
+export class InDeleteTaskDto {
   @IsMongoId()
   id: string;
 }

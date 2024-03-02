@@ -6,9 +6,9 @@
     "deleteOutDir": true,
     "webpack": true,
     "tsConfigPath": "apps/gallatin/tsconfig.app.json",
-    "plugins": [
-      "@nestjs/swagger"
-    ]
+    "plugins": ["@nestjs/swagger"],
+    "assets": ["**/*.proto"],
+    "watchAssets": true
   },
   "monorepo": true,
   "root": "apps/gallatin",
@@ -19,7 +19,9 @@
       "entryFile": "main",
       "sourceRoot": "apps/gallatin/src",
       "compilerOptions": {
-        "tsConfigPath": "apps/gallatin/tsconfig.app.json"
+        "tsConfigPath": "apps/gallatin/tsconfig.app.json",
+        "assets": ["**/*.proto"],
+        "watchAssets": true
       }
     },
     "nashville": {
@@ -28,7 +30,9 @@
       "entryFile": "main",
       "sourceRoot": "apps/nashville/src",
       "compilerOptions": {
-        "tsConfigPath": "apps/nashville/tsconfig.app.json"
+        "tsConfigPath": "apps/nashville/tsconfig.app.json",
+        "assets": ["**/*.proto"],
+        "watchAssets": true
       }
     },
     "ashland": {
@@ -37,7 +41,9 @@
       "entryFile": "main",
       "sourceRoot": "apps/ashland/src",
       "compilerOptions": {
-        "tsConfigPath": "apps/ashland/tsconfig.app.json"
+        "tsConfigPath": "apps/ashland/tsconfig.app.json",
+        "assets": ["**/*.proto"],
+        "watchAssets": true
       }
     },
     "common": {
@@ -46,7 +52,9 @@
       "entryFile": "index",
       "sourceRoot": "libs/common/src",
       "compilerOptions": {
-        "tsConfigPath": "libs/common/tsconfig.lib.json"
+        "tsConfigPath": "libs/common/tsconfig.lib.json",
+        "assets": ["**/*.proto"],
+        "watchAssets": true
       }
     }
   }

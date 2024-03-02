@@ -1,6 +1,6 @@
 import { IsMongoId } from 'class-validator';
 
-export class InGetTaskDto {
+export class InGetTaskParamDto {
   @IsMongoId()
   id: string;
 }

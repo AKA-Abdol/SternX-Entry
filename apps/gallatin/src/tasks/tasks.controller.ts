@@ -1,53 +1,39 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Post,
-  Put,
-  Query,
-} from '@nestjs/common';
+import { Controller } from '@nestjs/common';
 import { TasksService } from './tasks.service';
 import { InCreateTaskDto } from './dtos/in-create-task.dto';
-import {
-  InUpdateTaskDto,
-  InUpdateTaskParamDto,
-} from './dtos/in-update-task.dto';
-import { InDeleteTaskParamDto } from './dtos/in-delete-task.dto';
+import { InUpdateTaskDto } from './dtos/in-update-task.dto';
 import { TaskDto } from './dtos/task.dto';
-import { InGetTaskParamDto } from './dtos/in-get-task.dto';
 import { InGetPaginatedTasks } from './dtos/in-get-paginated-tasks.dto';
+import { GrpcMethod } from '@nestjs/microservices';
+import { InGetTaskDto } from './dtos/in-get-task.dto';
+import { InDeleteTaskDto } from './dtos/in-delete-task.dto';
 
 @Controller('tasks')
 export class TasksController {
   constructor(private readonly tasksService: TasksService) {}
 
-  @Post('')
-  createTask(@Body() input: InCreateTaskDto): Promise<TaskDto> {
+  @GrpcMethod('TasksService')
+  createTask(input: InCreateTaskDto): Promise<TaskDto> {
     return this.tasksService.createTask(input);
   }
 
-  @Put('/:id')
-  updateTask(
-    @Param() { id }: InUpdateTaskParamDto,
-    @Body() input: InUpdateTaskDto,
-  ): Promise<TaskDto> {
-    return this.tasksService.updateTask(id, input);
+  @GrpcMethod('TasksService')
+  updateTask(input: InUpdateTaskDto): Promise<TaskDto> {
+    return this.tasksService.updateTask(input);
   }
 
-  @Delete('/:id')
-  deleteTask(@Param() { id }: InDeleteTaskParamDto) {
-    return this.tasksService.deleteTask(id);
+  @GrpcMethod('TasksService')
+  deleteTask(input: InDeleteTaskDto) {
+    return this.tasksService.deleteTask(input.id);
   }
 
-  @Get('/:id')
-  getTask(@Param() { id }: InGetTaskParamDto) {
-    return this.tasksService.getById(id);
+  @GrpcMethod('TasksService')
+  getTask(input: InGetTaskDto) {
+    return this.tasksService.getById(input.id);
   }
 
-  @Get('/')
-  getPaginatedTasks(@Query() input: InGetPaginatedTasks) {
+  @GrpcMethod('TasksService')
+  getPaginatedTasks(input: InGetPaginatedTasks) {
     return this.tasksService.getPaginatedTasks(input.page, input.perPage);
   }
 }

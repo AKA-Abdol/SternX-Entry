@@ -12,6 +12,7 @@ import {
   GALLATIN_LOGGER_QUEUE,
   GALLATIN_UPDATE_TASK_TOPIC,
 } from '@app/common/payload/gallatin/constant';
+import { OutGetPaginatedTasksDto } from './dtos/out-get-paginated-tasks.dto';
 
 @Injectable()
 export class TasksService {
@@ -33,8 +34,8 @@ export class TasksService {
     return dto;
   }
 
-  async updateTask(id: string, input: InUpdateTaskDto): Promise<TaskDto> {
-    const { parentId, ...rest } = input;
+  async updateTask(input: InUpdateTaskDto): Promise<TaskDto> {
+    const { parentId, id, ...rest } = input;
     const taskToCreate = parentId
       ? { ...rest, parentId: new mongoose.Types.ObjectId(parentId) }
       : rest;
@@ -58,9 +59,12 @@ export class TasksService {
     return TaskDto.fromTask(task);
   }
 
-  async getPaginatedTasks(page: number, perPage: number): Promise<TaskDto[]> {
+  async getPaginatedTasks(
+    page: number,
+    perPage: number,
+  ): Promise<OutGetPaginatedTasksDto> {
     const offset = (page - 1) * perPage;
     const tasks = await this.tasksRepository.getPaginatedTasks(offset, perPage);
-    return tasks.map(TaskDto.fromTask);
+    return { tasks: tasks.map(TaskDto.fromTask) };
   }
 }
