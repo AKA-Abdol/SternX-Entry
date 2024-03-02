@@ -23,6 +23,7 @@
   [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
 
 ## Description
+This is the entry project for the SternX.
 
 [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
 
@@ -35,23 +36,17 @@ $ npm install
 ## Running the app
 
 ```bash
-# development
-$ npm run start
-
 # watch mode
-$ npm run start:dev
 
-# production mode
-$ npm run start:prod
+$ npm run start:dev gallatin
+$ npm run start:dev ashland
+$ npm run start:dev nashville
 ```
 
 ## Test
 
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
+# e2e/integration tests
 $ npm run test:e2e
 
 # test coverage
