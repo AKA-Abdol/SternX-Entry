@@ -5,8 +5,8 @@ export class TaskDto {
   title: string;
   description: string;
   parentId: string | null;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
 
   static fromTask(task: Task): TaskDto {
     const dto = new TaskDto();
@@ -14,8 +14,8 @@ export class TaskDto {
     dto.title = task.title;
     dto.description = task.description;
     dto.parentId = task.parentId ? task.parentId.toString() : null;
-    dto.createdAt = task.createdAt;
-    dto.updatedAt = task.updatedAt;
+    dto.createdAt = task.createdAt.toISOString();
+    dto.updatedAt = task.updatedAt.toISOString();
     return dto;
   }
 }
