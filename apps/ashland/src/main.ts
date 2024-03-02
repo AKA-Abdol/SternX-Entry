@@ -1,18 +1,12 @@
 import { NestFactory } from '@nestjs/core';
 import { AshlandModule } from './ashland.module';
-import { MicroserviceOptions, Transport } from '@nestjs/microservices';
+import { RmqService } from '@app/common';
+import { GALLATIN_LOGGER_QUEUE } from '@app/common/payload/gallatin/constant';
 
 async function bootstrap() {
-  const app = await NestFactory.createMicroservice<MicroserviceOptions>(
-    AshlandModule,
-    {
-      transport: Transport.RMQ,
-      options: {
-        urls: ['amqp://localhost:5672'],
-        queue: 'gallatin_queue',
-      },
-    },
-  );
-  await app.listen();
+  const app = await NestFactory.create(AshlandModule);
+  const rmqService = app.get<RmqService>(RmqService);
+  app.connectMicroservice(rmqService.getOptions(GALLATIN_LOGGER_QUEUE, true));
+  await app.startAllMicroservices();
 }
 bootstrap();

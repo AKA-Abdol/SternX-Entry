@@ -5,6 +5,7 @@ import { ConfigService } from '@nestjs/config';
 
 @Module({
   providers: [RmqService],
+  exports: [RmqService],
 })
 export class RmqModule {
   static register(name: string): DynamicModule {

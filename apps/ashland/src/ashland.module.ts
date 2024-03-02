@@ -1,10 +1,23 @@
 import { Module } from '@nestjs/common';
-import { AshlandController } from './ashland.controller';
-import { AshlandService } from './ashland.service';
+import { GallatinLoggerModule } from './gallatin-logger/gallatin-logger.module';
+import { RmqModule } from '@app/common';
+import { ConfigModule } from '@nestjs/config';
+import Joi from 'joi';
 
 @Module({
-  imports: [],
-  controllers: [AshlandController],
-  providers: [AshlandService],
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      validationSchema: Joi.object({
+        RABBIT_MQ_URI: Joi.string().required(),
+        RABBIT_MQ_GALLATIN_LOGGER_QUEUE: Joi.string().required(),
+      }),
+      envFilePath: './apps/ashland/.env',
+    }),
+    GallatinLoggerModule,
+    RmqModule,
+  ],
+  controllers: [],
+  providers: [],
 })
 export class AshlandModule {}

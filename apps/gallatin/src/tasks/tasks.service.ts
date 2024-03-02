@@ -1,14 +1,24 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { TasksRepository } from './tasks.repo';
 import { InCreateTaskDto } from './dtos/in-create-task.dto';
 import mongoose from 'mongoose';
 import { ICreateTask } from './interfaces/create-task.interface';
 import { InUpdateTaskDto } from './dtos/in-update-task.dto';
 import { TaskDto } from './dtos/task.dto';
+import { ClientProxy } from '@nestjs/microservices';
+import {
+  GALLATIN_CREATE_TASK_TOPIC,
+  GALLATIN_DELETE_TASK_TOPIC,
+  GALLATIN_LOGGER_QUEUE,
+  GALLATIN_UPDATE_TASK_TOPIC,
+} from '@app/common/payload/gallatin/constant';
 
 @Injectable()
 export class TasksService {
-  constructor(private readonly tasksRepository: TasksRepository) {}
+  constructor(
+    private readonly tasksRepository: TasksRepository,
+    @Inject(GALLATIN_LOGGER_QUEUE) private readonly clientProxy: ClientProxy,
+  ) {}
 
   async createTask(input: InCreateTaskDto): Promise<TaskDto> {
     const taskToCreate: ICreateTask = {
@@ -18,7 +28,9 @@ export class TasksService {
     if (input.parentId)
       taskToCreate.parentId = new mongoose.Types.ObjectId(input.parentId);
     const task = await this.tasksRepository.createOne(taskToCreate);
-    return TaskDto.fromTask(task);
+    const dto = TaskDto.fromTask(task);
+    this.clientProxy.emit(GALLATIN_CREATE_TASK_TOPIC, dto);
+    return dto;
   }
 
   async updateTask(id: string, input: InUpdateTaskDto): Promise<TaskDto> {
@@ -28,11 +40,16 @@ export class TasksService {
       : rest;
 
     const task = await this.tasksRepository.updateById(id, taskToCreate);
-    return TaskDto.fromTask(task);
+    const dto = TaskDto.fromTask(task);
+    this.clientProxy.emit(GALLATIN_UPDATE_TASK_TOPIC, dto);
+    return dto;
   }
 
-  deleteTask(id: string) {
-    return this.tasksRepository.deleteById(id);
+  async deleteTask(id: string): Promise<TaskDto> {
+    const deletedTask = await this.tasksRepository.deleteById(id);
+    const dto = TaskDto.fromTask(deletedTask);
+    this.clientProxy.emit(GALLATIN_DELETE_TASK_TOPIC, dto);
+    return dto;
   }
 
   async getById(id: string): Promise<TaskDto> {

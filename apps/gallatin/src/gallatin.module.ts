@@ -10,6 +10,8 @@ import { MongooseModule } from '@nestjs/mongoose';
       isGlobal: true,
       validationSchema: Joi.object({
         MONGODB_URI: Joi.string().required(),
+        RABBIT_MQ_URI: Joi.string().required(),
+        RABBIT_MQ_GALLATIN_LOGGER_QUEUE: Joi.string().required(),
       }),
       envFilePath: './apps/gallatin/.env',
     }),
