@@ -1,19 +1,40 @@
 version: '1.0'
 services:
+  # nashville:
+  #   build:
+  #     context: .
+  #     dockerfile: ./apps/nashville/Dockerfile
+  #   env_file:
+  #     - ./apps/nashville/.env
+  #   depends_on:
+  #     - gallatin
+  # gallatin:
+  #   build:
+  #     context: .
+  #     dockerfile: ./apps/gallatin/Dockerfile
+  #   env_file:
+  #     - ./apps/gallatin/.env
+  #   depends_on:
+  #     - mongo
+  #     - rabbitmq
+  # ashland:
+  #   build:
+  #     context: .
+  #     dockerfile: ./apps/ashland/Dockerfile
+  #   env_file:
+  #     - ./apps/ashland/.env
+  #   depends_on:
+  #     - rabbitmq
   mongo:
     image: mongo:latest
     ports:
       - '27017:27017'
     volumes:
       - sternx-mongo:/data/db
-  redis:
-    image: redis:latest
-    ports:
-      - '6379:6379'
   rabbitmq:
     image: rabbitmq:alpine
     ports:
       - '5672:5672'
 
 volumes:
-  sternx-mongo: 
+  sternx-mongo:

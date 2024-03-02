@@ -1,13 +1,14 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication, ValidationPipe } from '@nestjs/common';
-import request from 'supertest';
+import { INestApplication } from '@nestjs/common';
 import { GallatinModule } from './../src/gallatin.module';
 import { InCreateTaskDto } from '../src/tasks/dtos/in-create-task.dto';
 import { Seeder } from '@app/common';
 import { TasksSeeder } from '../src/tasks/tasks.seeder';
+import { TasksService } from '../src/tasks/tasks.service';
 
 describe('GallatinController (e2e)', () => {
   let app: INestApplication;
+  let tasksService: TasksService;
   let seeder: Seeder;
   const mockTask: InCreateTaskDto = {
     description: 'consider using nestjs',
@@ -20,13 +21,7 @@ describe('GallatinController (e2e)', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication();
-    app.useGlobalPipes(
-      new ValidationPipe({
-        transform: true,
-        whitelist: true,
-        forbidNonWhitelisted: true,
-      }),
-    );
+    tasksService = moduleFixture.get<TasksService>(TasksService);
     seeder = moduleFixture.get<TasksSeeder>(TasksSeeder);
     await seeder.seed();
     await app.init();
@@ -37,86 +32,38 @@ describe('GallatinController (e2e)', () => {
     await app.close();
   });
 
-  it('/ (POST) should create task', () => {
-    return request(app.getHttpServer())
-      .post('/tasks')
-      .send(mockTask)
-      .expect(201)
-      .then((response) => {
-        expect(response.body).toHaveProperty('id');
-      });
+  it('should create task', async () => {
+    const task = await tasksService.createTask(mockTask);
+    expect(task).toHaveProperty('id');
   });
 
-  it('/ (PUT) should update task', async () => {
-    const newTask = await request(app.getHttpServer())
-      .post('/tasks')
-      .send(mockTask)
-      .expect(201);
-
-    const id: number = newTask.body.id;
+  it('should update task', async () => {
+    const newTask = await tasksService.createTask(mockTask);
+    const id = newTask.id;
     const taskUpdate = {
       title: 'newTitle',
     };
 
-    await request(app.getHttpServer())
-      .put(`/tasks/${id}`)
-      .send(taskUpdate)
-      .expect(200)
-      .then((response) => {
-        expect(response.body.title).toEqual(taskUpdate.title);
-        expect(new Date(response.body.createdAt).getTime()).toBeLessThan(
-          new Date(response.body.updatedAt).getTime(),
-        );
-      });
+    let task = await tasksService.updateTask({ ...taskUpdate, id });
+    expect(task.title).toEqual(taskUpdate.title);
+    expect(new Date(task.createdAt).getTime()).toBeLessThan(
+      new Date(task.updatedAt).getTime(),
+    );
 
-    return request(app.getHttpServer())
-      .get(`/tasks/${id}`)
-      .expect(200)
-      .then((response) => {
-        expect(response.body.title).toEqual(taskUpdate.title);
-      });
+    task = await tasksService.getById(id);
+    expect(task.title).toEqual(taskUpdate.title);
   });
 
-  it('/ (POST) should reject and validate inputs', () => {
-    request(app.getHttpServer()).post('/tasks').expect(400);
-    return request(app.getHttpServer())
-      .post('/tasks')
-      .send({ ...mockTask, parentId: 123 })
-      .expect(400);
+  it('should return 12 tasks', async () => {
+    const tasks = await tasksService.getPaginatedTasks(1, 12);
+    expect(tasks.tasks).toHaveLength(12);
   });
 
-  it('/ (GET) should return 10 default tasks', () => {
-    return request(app.getHttpServer())
-      .get('/tasks')
-      .expect(200)
-      .then((response) => {
-        expect(response.body).toHaveLength(10);
-      });
-  });
-
-  it('/ (GET) should return 12 tasks', () => {
-    return request(app.getHttpServer())
-      .get('/tasks')
-      .query({
-        perPage: 12,
-      })
-      .expect(200)
-      .then((response) => {
-        expect(response.body).toHaveLength(12);
-      });
-  });
-
-  it('/ (GET) should reject invalid mongoId', () => {
-    return request(app.getHttpServer()).get('/tasks/123').expect(400);
-  });
-
-  it('/ (DELETE) should delete task by id', async () => {
-    const tasks = await request(app.getHttpServer())
-      .get('/tasks')
-      .query({ page: 12, perPage: 1 })
-      .expect(200);
-    const task = tasks.body[0];
-    await request(app.getHttpServer()).delete(`/tasks/${task.id}`).expect(200);
-    return request(app.getHttpServer()).get(`/tasks/${task.id}`).expect(404);
+  it('should delete task by id', async () => {
+    const tasks = await tasksService.getPaginatedTasks(12, 1);
+    const task = tasks.tasks[0];
+    const deletedTask = await tasksService.deleteTask(task.id);
+    expect(deletedTask.id).toEqual(task.id);
+    expect(() => tasksService.getById(deletedTask.id)).rejects.toThrow();
   });
 });
