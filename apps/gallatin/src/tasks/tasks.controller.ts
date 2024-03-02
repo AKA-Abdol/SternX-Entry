@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  Inject,
   Param,
   Post,
   Put,
@@ -18,10 +19,14 @@ import { InDeleteTaskParamDto } from './dtos/in-delete-task.dto';
 import { TaskDto } from './dtos/task.dto';
 import { InGetTaskParamDto } from './dtos/in-get-task.dto';
 import { InGetPaginatedTasks } from './dtos/in-get-paginated-tasks.dto';
+import { ClientProxy } from '@nestjs/microservices';
 
 @Controller('tasks')
 export class TasksController {
-  constructor(private readonly tasksService: TasksService) {}
+  constructor(
+    private readonly tasksService: TasksService,
+    @Inject('LOGGER_SERVICE') private readonly client: ClientProxy,
+  ) {}
 
   @Post('')
   createTask(@Body() input: InCreateTaskDto): Promise<TaskDto> {
@@ -49,5 +54,10 @@ export class TasksController {
   @Get('/')
   getPaginatedTasks(@Query() input: InGetPaginatedTasks) {
     return this.tasksService.getPaginatedTasks(input.page, input.perPage);
+  }
+
+  @Get('message/:message')
+  message(@Param('message') message: string) {
+    this.client.emit('something', message);
   }
 }
